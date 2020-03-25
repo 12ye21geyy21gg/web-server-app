@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <title>Сервис по хеш-графики</title>
+    <link rel="stylesheet" href="style.css" />
+    <style>
+        .container{
+            margin-top:1em;
+        }
+        .profiles{
+            text-align:right;
+        }
+        #text{
+            margin:0.1em;
+        }
+    </style>
+</head>
+<body class="container">
+    <div class="panel panel-default">
+      <div class="panel-default">
+          <h1>Hash Grapher</h1>
+      </div>
+    </div>
+    <div class="profiles">
+          {% if auth %}
+            <h4>{{ name }}<a class="label label-default" href="/logout">Выйти</a></h4>
+            <a class="btn btn-primary" href="/view">Просмотреть результаты</a>
+          {% else %}
+            <p>
+              <a class="btn btn-danger " href="/register">Зарегистрироваться</a>
+              <a class="btn btn-success" href="/login">Войти</a>
+            </p>
+          {% endif %}
+    </div>
+    <div class="panel panel-primary">
+        <div class="panel-heading"><h3 id="text">Что сервис позволяет делать</h3></div>
+        <ul class="list-group">
+            <li class="list-group-item">Создание случайного шума</li>
+            <li class="list-group-item">Создание абстрактной иконки</li>
+            <li class="list-group-item">Создание зеркальных иконок</li>
+            <li class="list-group-item">Создание иконок гитхаба</li>
+            <li class="list-group-item">Создание старой капчи</li>
+            <li class="list-group-item">Создание зеркальных иконок</li>
+        </ul>
+    </div>
+
+</body>
+</html>
