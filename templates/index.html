@@ -45,6 +45,36 @@
             <li class="list-group-item">Создание зеркальных иконок</li>
         </ul>
     </div>
+    <form action="" method="post">
+        {{ form.hidden_tag() }}
+        <p>{{ form.pixelnoise() }} {{ form.pixelnoise.label }}</p>
+        <p>{{ form.trianglenoise() }} {{ form.trianglenoise.label }}</p>
+        <p>{{ form.mirrored() }} {{ form.mirrored.label }}</p>
+        <p>{{ form.mirroredgithub() }} {{ form.mirroredgithub.label }}</p>
+        <p>{{ form.captcha() }} {{ form.captcha.label }}</p>
+        <p>
+            {{ form.size.label }}<br>
+            {{ form.size(class="form-control") }}<br>
+            {% for error in form.size.errors %}
+                <div class="alert alert-danger" role="alert">
+                    {{ error }}
+                </div>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.num.label }}<br>
+            {{ form.num(class="form-control") }}<br>
+        </p>
+        <p>
+            {{ form.inp.label }}<br>
+            {{ form.inp(class="form-control") }}<br>
+        </p>
+        <p>
+            {{ form.finp.label }}<br>
+            {{ form.finp(class="form-control") }}<br>
+        </p>
+        <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
+    </form>
 
 </body>
 </html>

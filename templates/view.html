@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Bootstrap Example</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+</head>
+<body class="container">
+<div class="panel panel-primary">
+    <div class="panel-heading"><h3>Результат работы программы</h3></div>
+    {% for i in temp %}
+        <div class="list-group-item">
+            <img src="{{ i }}" alt="что то пошло не так" width="30%" height="auto" style="margin-left:35%; margin-right:auto;">
+        </div>
+    {% endfor %}
+    <div class="panel-footer">
+        <a class="btn btn-primary" href="/">На главную</a>
+    </div>
+</div>
+</body>
+</html>
