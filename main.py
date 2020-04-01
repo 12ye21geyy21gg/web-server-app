@@ -34,6 +34,7 @@ class UltimateForm(FlaskForm):
 
 def copy_files(names):
     for i in names:
+        pass
 
 
 def get_hash(passw):
@@ -170,5 +171,4 @@ def show():
 if __name__ == '__main__':
     #clean()
     app.run(port=8080,host='0.0.0.0')
-    conn.close()
     clean()
