@@ -8,9 +8,11 @@ class Gen():
 
     def get_name(self):
         return '/static/' + hashlib.sha256(str(time.time()).encode('utf8')).hexdigest() + '.png'
+    def get_fnames(self):
+        return list(map(lambda x: x[8:],self.names))
 
     def gen_random_pixel_noise(self,size,num,inp):
-        if not num:
+        if not num or num == 0:
             num = 5
         if not size:
             size = 200
@@ -27,7 +29,7 @@ class Gen():
         img.save('..'+name)
         self.names.append(name)
     def gen_random_triangle_noise(self,size,num,inp):
-        if not num:
+        if not num or num == 0:
             num = 5
         if not size:
             size = 200
@@ -43,7 +45,7 @@ class Gen():
         img.save('..'+name)
         self.names.append(name)
     def gen_mirrored(self,size,num,inp,prim=None,othr=None):
-        if not num:
+        if not num or num == 0:
             num = 5
         if not size:
             size = 200
@@ -89,7 +91,7 @@ class Gen():
         img.save('..'+name)
         self.names.append(name)
     def gen_mirrored_github(self,size,num,inp,prim=None):
-        if not num:
+        if not num or num == 0:
             num = 5
         if not size:
             size = 200
@@ -134,6 +136,7 @@ class Gen():
                 pixs[i,j] = ((pixs[i,j][0] + int(m2[i][j][0]))%256,(pixs[i,j][1] + int(m2[i][j][1]))%256,(pixs[i,j][2] + int(m2[i][j][2]))%256,)
                 pass
         img1 =  img1.rotate(-90)
+        img1 = img1.transpose(Image.FLIP_LEFT_RIGHT)
         name = self.get_name()
         img1.save('..'+name)
         self.names.append(name)
@@ -162,48 +165,99 @@ class Gen():
             return (255,255,255)
         else:
             return (0,0,0)
-    def pixilise(self,size,num,inp):
-        if not num:
+    def gen_pixilise(self,size,num,inp):
+        if not num or num == 0:
             num = 5
-        othr = Image.open(inp).resize((size,size))
+        if 0>= num or num > size:
+            num = size
+        if not inp:
+            return
+        try:
+            othr = Image.open(inp).resize((size,size))
+        except Exception:
+            return
         pixs = othr.load()
         img = Image.new('RGB', (size, size), color='white')
         dr = ImageDraw.Draw(img)
         for h in range(num):
             for w in range(num):
                 data = list()
-                for hh in range(h*size//num,(h+1)*size//num):
+                k = size//num
+                if k == 0:
+                    k = 1
+                for hh in range(h*k,(h+1)*k):
                     data.append(list())
-                    for ww in range(w*size//num,(w+1)*size//num):
-                        data[hh%(size//num)].append(pixs[hh,ww])
+                    for ww in range(w*k,(w+1)*k):
+                        data[hh%(k)].append(pixs[hh,ww])
                 color = self.get_color(data)
-                dr.rectangle([w * size // num, h * size // num, (w + 1) * size // num, (h + 1) * size // num],fill=color, width=0)
+                dr.rectangle([w * k, h * k, (w + 1) * k, (h + 1) * k],fill=color, width=0)
 
 
         del dr
         img = img.rotate(-90)
+        img = img.transpose(Image.FLIP_LEFT_RIGHT)
         name = self.get_name()
         img.save('..'+name)
         self.names.append(name)
-    def monopixilise(self,size,num,inp,porog=127):
-        if not num:
+    def gen_monopixilise(self,size,num,inp,porog=127):
+        if not num or num == 0:
             num = 5
+        if 0>= num or num > size:
+            num = size
         if not(0 <= porog <= 255):
             porog = 255 * 3 / 2
+        if not inp:
+            return
         porog *= 3
-        othr = Image.open(inp).resize((size,size))
+        try:
+            othr = Image.open(inp).resize((size,size))
+        except Exception:
+            return
         pixs = othr.load()
         img = Image.new('RGB', (size, size), color='white')
         dr = ImageDraw.Draw(img)
         for h in range(num):
             for w in range(num):
                 data = list()
-                for hh in range(h*size//num,(h+1)*size//num):
+                k = size//num
+                if k == 0:
+                    k = 1
+                for hh in range(h*k,(h+1)*k):
                     data.append(list())
-                    for ww in range(w*size//num,(w+1)*size//num):
-                        data[hh%(size//num)].append(pixs[hh,ww])
+                    for ww in range(w*k,(w+1)*k):
+                        data[hh%(k)].append(pixs[hh,ww])
                 color = self.get_color_mono(data,porog)
-                dr.rectangle([w * size // num, h * size // num, (w + 1) * size // num, (h + 1) * size // num],fill=color, width=0)
+                dr.rectangle([w * k, h * k, (w + 1) * k, (h + 1) * k],fill=color, width=0)
+
+
+        del dr
+        img = img.rotate(-90)
+        img = img.transpose(Image.FLIP_LEFT_RIGHT)
+        name = self.get_name()
+        img.save('..'+name)
+        self.names.append(name)
+
+    def gen_voronoise(self,size,num,inp):
+        if not num or num == 0:
+            num = 5
+        if 0>= num or num > size:
+            num = size
+        if not inp:
+            return
+        try:
+            othr = Image.open(inp).resize((size,size))
+        except Exception:
+            return
+        pixs = othr.load()
+        img = Image.new('RGB', (size, size), color='white')
+        dr = ImageDraw.Draw(img)
+        pts = list()
+        for i in range(num):
+            pass
+            #pts.append(self.r.randint(0,size-1),self.r.randint(0,size-1),(s  elf.r.randint(0,255),))
+        for h in range(size):
+            for w in range(size):
+                pass
 
 
         del dr
@@ -211,6 +265,3 @@ class Gen():
         name = self.get_name()
         img.save('..'+name)
         self.names.append(name)
-
-# a = Gen()
-#a.pixilise(400,40,'s.jpg')

@@ -2,10 +2,13 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField,DecimalField,FileField
 import wtforms
 from wtforms.validators import DataRequired
-from flask import Flask, render_template,url_for,redirect,abort
-import json,random,sqlite3,hashlib
+from flask import Flask, render_template,url_for,redirect,abort,request
+import json,random,sqlite3,hashlib,time,shutil,os
 from flask import Flask
 import app.gen as g
+import app.gc as GC
+from os import listdir
+from os.path import isfile, join
 
 gen = g.Gen()
 
@@ -26,16 +29,46 @@ class UltimateForm(FlaskForm):
     mirrored = BooleanField('Режим 3: Зеркально-пиксельный')
     mirroredgithub = BooleanField('Режим 4: Зеркально-гитхабный')
     captcha = BooleanField('Режим 5: Генератор капчи')
+    pixilise = BooleanField('Режим 6: Пиксилятор фото')
+    monopixilise = BooleanField('Режим 7: Черно-белый пиксилятор фото')
     size = DecimalField('Ширина:', validators=[DataRequired()])
-    num = DecimalField('Количество блоков:')
+    num = StringField('Количество блоков:')
+    porog = StringField('Порог:')
     inp = StringField('Строка для рандомизации:')
     finp = FileField('Фотография для модицикаций:')
     submit = SubmitField('Сгенерировать')
 
-def copy_files(names):
-    for i in names:
-        pass
+def copy_file_function(list_of_files, directory1, directory2,rename=True):
+    global usrs
+    auth,name,id,temp = get_usrs(request.remote_addr)
+    if id != 0:
+        for i in list_of_files:
+            address = directory1 + '/' + i
+            shutil.copy(address, directory2)
+            if rename:
+                os.rename(directory2 + '/' + i, directory2 + '/' + str(id)+'_' + i)
+    else:
+        return
 
+def get_usrs(ip):
+    global usrs
+    if ip not in usrs.keys():
+        usrs[ip] = [False,'',0,list()]
+        return False,'',0,list()
+    else:
+        return usrs[ip][0],usrs[ip][1],usrs[ip][2],usrs[ip][3]
+
+def get_works(id):
+    global gc
+    onlyfiles = [f for f in listdir('../data/usr') if isfile(join('../data/usr', f))]
+    temp = list()
+    copy_file_function(onlyfiles,'../data/usr','../static',rename=False)
+    #gc.add_files(list(map(lambda x:x.split('_')[1],onlyfiles)),'../static')
+    gc.add_files(onlyfiles,'../static')
+    for i in onlyfiles:
+        if str(id) == i.split('_')[0]:
+            temp.append('/static/'+i)
+    return temp
 
 def get_hash(passw):
     return hashlib.sha256(passw.encode('utf8')).hexdigest()
@@ -49,8 +82,7 @@ def get_data(login,conn):
 def insert_user(name,login,pasw,conn):
     conn.execute(f'INSERT INTO USERS (name,login,password) VALUES (\'{name}\',\'{login}\',\'{get_hash(pasw)}\')')
     conn.commit()
-def clean():
-    pass
+
 
 app = Flask(__name__,static_url_path='/static')
 app.debug =True
@@ -58,11 +90,9 @@ app.jinja_env.auto_reload = True
 
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
 app.config['TEMPLATES_AUTO_RELOAD'] = True
+gc = GC.Gc(app.logger)
 
-auth = False
-name = ''
-id = ''
-temp = None
+usrs = dict() # [auth,name,id,temp]
 
 @app.errorhandler(404)
 def not_found(error):
@@ -74,39 +104,61 @@ def not_found(error):
 
 @app.route('/',methods=['GET','POST'])
 def main():
-    global temp,app,name,auth
-    app.logger.debug([name,auth])
+    global usrs,gc
+    auth,name,id,temp = get_usrs(request.remote_addr)
     form = UltimateForm()
     if form.validate_on_submit():
-        temp = [form.pixelnoise.data,form.trianglenoise.data,form.mirrored.data,form.mirroredgithub.data,form.captcha.data,int(form.size.data),int(form.num.data),form.inp.data]
+        if form.num.data == '':
+            num = 0
+        else:
+            num = int(form.num.data)
+        if form.porog.data == '':
+            porog = 127
+        else:
+            porog = int(form.porog.data)
+        fname = ''
+        if request.method == 'POST':
+            f = request.files['file']
+            fname = hashlib.sha256((str(time.time())+str(f.content_length)).encode('utf8')).hexdigest() + '.png'
+            f.save('../static/'+fname)
+            app.logger.debug(fname)
+            gc.add_files([fname],'../static')
+            f.close()
+        usrs[request.remote_addr][3] = [form.pixelnoise.data,form.trianglenoise.data,form.mirrored.data,form.mirroredgithub.data,form.captcha.data,int(form.size.data),num,form.inp.data,form.pixilise.data,form.monopixilise.data,porog,'../static/'+fname]
         return redirect('/result')
     return render_template('index.html',form=form,name=name,auth=auth)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    global app
+    global app,gc
     form = LoginForm()
     if form.validate_on_submit():
         conn = sqlite3.connect('../data/users.db')
         if form.login.data in get_logins(conn):
             data = get_data(form.login.data,conn)
             if get_hash(form.password.data) == data[3]:
-                global auth,id,name
+                global usrs
+                auth, name, id, temp = get_usrs(request.remote_addr)
                 auth = True
                 id = data[0]
                 name = data[1]
+                usrs[request.remote_addr] = [auth,name,id,temp]
                 conn.close()
+                gc.check()
                 return redirect('/')
             else:
                 conn.close()
+                gc.check()
                 return render_template('login.html',
                                 message="Неправильный логин или пароль",
                                 form=form)
         else:
             conn.close()
+            gc.check()
             return render_template('login.html',
                             message="Неправильный логин или пароль",
                             form=form)
+    gc.check()
     return render_template('login.html', form=form)
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -133,42 +185,59 @@ def register():
 
 @app.route('/logout',methods=['GET','POST'])
 def logout():
-    global auth,name,id
-    auth = False
-    name = ''
-    id = ''
+    global usrs
+    usrs[request.remote_addr] = [False,'',0,list()]
     return redirect('/')
 
 @app.route('/view',methods=['GET','POST'])
 def view():
-    pass
+    global temp,gc
+    auth, name, id, temp = get_usrs(request.remote_addr)
+    if id > 0:
+        return render_template('view.html', temp=get_works(id))
+    else:
+        abort(404)
 
 @app.route('/result',methods=['GET','POST'])
 def show():
-    global gen,temp,app
+    global gen,app,usrs,gc
+    auth, name, id, temp = get_usrs(request.remote_addr)
+    app.logger.debug(gc.stack)
     if temp:
-        #app.logger.debug(temp)
         if type(temp[0]) is bool:
-            if temp[0]:
-                gen.gen_random_pixel_noise(temp[5], temp[6], temp[7])
-            if temp[1]:
-                gen.gen_random_triangle_noise(temp[5], temp[6], temp[7])
-            if temp[2]:
-                gen.gen_mirrored(temp[5], temp[6], temp[7])
-            if temp[3]:
-                gen.gen_mirrored_github(temp[5], temp[6], temp[7])
-            if temp[4]:
-                gen.gen_captcha(temp[5], temp[7])
-            temp = 'good'
+            try:
+                if temp[0]:
+                    gen.gen_random_pixel_noise(temp[5], temp[6], temp[7])
+                if temp[1]:
+                    gen.gen_random_triangle_noise(temp[5], temp[6], temp[7])
+                if temp[2]:
+                    gen.gen_mirrored(temp[5], temp[6], temp[7])
+                if temp[3]:
+                    gen.gen_mirrored_github(temp[5], temp[6], temp[7])
+                if temp[4]:
+                    gen.gen_captcha(temp[5], temp[7])
+                if temp[8]:
+                    gen.gen_pixilise(temp[5],temp[6],temp[11])
+                if temp[9]:
+                    gen.gen_monopixilise(temp[5],temp[6],temp[11],temp[10])
+            except Exception as e:
+                app.logger.debug(e.__class__.__name__)
+                gc.check()
+                return abort(404)
+            usrs[request.remote_addr][3] = gen.names
+            copy_file_function(gen.get_fnames(),'../static','../data/usr')
+            gc.add_files(gen.get_fnames(),'../static')
+            gen.names = list()
+            gc.check()
             return redirect('/result')
         else:
-            return render_template('result.html',temp=gen.names)
+            gc.check()
+            return render_template('result.html',temp=usrs[request.remote_addr][3])
         #return render_template('view.html')
     else:
         abort(404)
 
 
 if __name__ == '__main__':
-    #clean()
+    gc.clean()
     app.run(port=8080,host='0.0.0.0')
-    clean()
