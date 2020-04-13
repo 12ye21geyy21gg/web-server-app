@@ -31,6 +31,8 @@ class UltimateForm(FlaskForm):
     captcha = BooleanField('Режим 5: Генератор капчи')
     pixilise = BooleanField('Режим 6: Пиксилятор фото')
     monopixilise = BooleanField('Режим 7: Черно-белый пиксилятор фото')
+    voronoise = BooleanField('Режим 8: Эффект Вороного')
+    photo_voronoise = BooleanField('Режим 9: Фото с эффектом Вороного')
     size = DecimalField('Ширина:', validators=[DataRequired()])
     num = StringField('Количество блоков:')
     porog = StringField('Порог:')
@@ -96,11 +98,15 @@ usrs = dict() # [auth,name,id,temp]
 
 @app.errorhandler(404)
 def not_found(error):
-    return "page is not found or bad request"
+    return render_template('error.html')
 
 @app.errorhandler(405)
 def not_found(error):
-    return "page is not found or bad request"
+    return render_template('error.html')
+
+@app.route('/help')
+def get_help():
+    return render_template('help.html')
 
 @app.route('/',methods=['GET','POST'])
 def main():
@@ -111,11 +117,17 @@ def main():
         if form.num.data == '':
             num = 0
         else:
-            num = int(form.num.data)
+            try:
+                num = int(form.num.data)
+            except Exception:
+                num = 5
         if form.porog.data == '':
             porog = 127
         else:
-            porog = int(form.porog.data)
+            try:
+                porog = int(form.porog.data)
+            except Exception:
+                porog = 127
         fname = ''
         if request.method == 'POST':
             f = request.files['file']
@@ -124,7 +136,7 @@ def main():
             app.logger.debug(fname)
             gc.add_files([fname],'../static')
             f.close()
-        usrs[request.remote_addr][3] = [form.pixelnoise.data,form.trianglenoise.data,form.mirrored.data,form.mirroredgithub.data,form.captcha.data,int(form.size.data),num,form.inp.data,form.pixilise.data,form.monopixilise.data,porog,'../static/'+fname]
+        usrs[request.remote_addr][3] = [form.pixelnoise.data,form.trianglenoise.data,form.mirrored.data,form.mirroredgithub.data,form.captcha.data,int(form.size.data),num,form.inp.data,form.pixilise.data,form.monopixilise.data,porog,'../static/'+fname,form.voronoise.data,form.photo_voronoise.data]
         return redirect('/result')
     return render_template('index.html',form=form,name=name,auth=auth)
 
@@ -220,6 +232,11 @@ def show():
                     gen.gen_pixilise(temp[5],temp[6],temp[11])
                 if temp[9]:
                     gen.gen_monopixilise(temp[5],temp[6],temp[11],temp[10])
+                if temp[12]:
+                    gen.gen_voronoise(temp[5],temp[6],temp[7])
+                if temp[13]:
+                    gen.gen_photo_voronoise(temp[5],temp[6],temp[11])
+
             except Exception as e:
                 app.logger.debug(e.__class__.__name__)
                 gc.check()
@@ -236,6 +253,15 @@ def show():
         #return render_template('view.html')
     else:
         abort(404)
+
+@app.route('/delete/<num>',methods=['GET','POST'])
+def delete(num):
+    try:
+        os.remove('../data/usr/'+num)
+    except Exception as e:
+        app.logger.debug(e)
+        abort(404)
+    return redirect('/view')
 
 
 if __name__ == '__main__':

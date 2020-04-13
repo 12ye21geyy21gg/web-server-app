@@ -27,12 +27,14 @@
           {% if auth %}
             <h4>{{ name }}<a class="label label-default" href="/logout">Выйти</a></h4>
             <a class="btn btn-primary" href="/view">Просмотреть результаты</a>
-          {% else %}
-            <p>
+          {% endif %}
+          <p>
+              <a class="btn btn-primary" href="/help">Получить помощь</a>
+          {% if not auth %}
               <a class="btn btn-danger " href="/register">Зарегистрироваться</a>
               <a class="btn btn-success" href="/login">Войти</a>
-            </p>
           {% endif %}
+          </p>
     </div>
     <div class="panel panel-primary">
         <div class="panel-heading"><h3 id="text">Что сервис позволяет делать</h3></div>
@@ -41,8 +43,12 @@
             <li class="list-group-item">Создание абстрактной иконки</li>
             <li class="list-group-item">Создание зеркальных иконок</li>
             <li class="list-group-item">Создание иконок гитхаба</li>
-            <li class="list-group-item">Создание старой капчи</li>
+            <li class="list-group-item">Создание видоизмененной старой версии капчи</li>
             <li class="list-group-item">Создание зеркальных иконок</li>
+            <li class="list-group-item">Создание пиксилизированных фотографий</li>
+            <li class="list-group-item">Создание ЧБ пиксилизированных фотографий</li>
+            <li class="list-group-item">Создание эффекта Вороного</li>
+            <li class="list-group-item">Создание фотографий с эффектом Вороного</li>
         </ul>
     </div>
     <form action="" method="post" enctype = "multipart/form-data">
@@ -54,7 +60,8 @@
         <p>{{ form.captcha() }} {{ form.captcha.label }}</p>
         <p>{{ form.pixilise() }} {{ form.pixilise.label }}</p>
         <p>{{ form.monopixilise() }} {{ form.monopixilise.label }}</p>
-
+        <p>{{ form.voronoise() }} {{ form.voronoise.label }}</p>
+        <p>{{ form.photo_voronoise() }} {{ form.photo_voronoise.label }}</p>
         <p>
             {{ form.size.label }}<br>
             {{ form.size(class="form-control") }}<br>

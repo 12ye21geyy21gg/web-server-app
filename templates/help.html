@@ -9,14 +9,8 @@
 </head>
 <body class="container">
 <div class="panel panel-primary">
-    <div class="panel-heading"><h3>Все ваши работы</h3></div>
-    {% for i in temp %}
-        <div class="list-group-item">
-            <img src="{{ i }}" alt="что то пошло не так" width="30%" height="auto" style="margin-left:35%; margin-right:auto;">
-            <br>
-            <a class="btn btn-danger" href="/delete/{{ i[8:] }}">Удалить</a>
-        </div>
-    {% endfor %}
+    <div class="panel-heading"><h1>Помощь</h1></div>
+    <div class="panel-body"><h2>Страница не найдена или неверный запрос</h2></div>
     <div class="panel-footer">
         <a class="btn btn-primary" href="/">На главную</a>
     </div>
