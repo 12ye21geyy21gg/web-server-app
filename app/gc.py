@@ -5,10 +5,10 @@ class Gc: # Garbage Collector
         self.stack = list()
         self.logger = logger
     def clean(self):
-        onlyfiles = [f for f in os.listdir(join('..','static')) if isfile(join('..','static', f))]
+        onlyfiles = [f for f in os.listdir(os.path.abspath(join('..','static'))) if isfile(os.path.abspath(join('..','static', f)))]
         for i in onlyfiles:
             try:
-                os.remove('../static/'+i)
+                os.remove(os.path.abspath(join('..','static',i)))
             except Exception as e:
                 self.logger.debug(e)
     def check(self):
@@ -22,7 +22,7 @@ class Gc: # Garbage Collector
     def delete_file_function(self,list_of_files, directory):
         for i in list_of_files:
             try:
-                file = directory + '/' + i
+                file = join(directory , i)
                 os.remove(file)
             except Exception as e:
                 self.logger.debug(e)
