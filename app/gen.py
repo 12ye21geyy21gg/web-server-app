@@ -1,8 +1,6 @@
 import random
 from PIL import Image,ImageDraw,ImageFont
 import numpy,time,hashlib,math
-import os
-from os.path import join
 class Gen():
     def __init__(self):
         self.r = random.Random()
@@ -19,8 +17,6 @@ class Gen():
                 num = 5
             if not size:
                 size = 200
-            if 0>= num or num > size:
-                num = size
             if inp:
                 self.r.seed(inp)
             img = Image.new('RGB',(size,size),color='white')
@@ -32,7 +28,6 @@ class Gen():
             del dr
             name = self.get_name()
             img.save('..'+name)
-            img.save(os)
             self.names.append(name)
         except Exception as e:
             return
@@ -42,8 +37,6 @@ class Gen():
                 num = 5
             if not size:
                 size = 200
-            if 0>= num or num > size:
-                num = size
             if inp:
                 self.r.seed(inp)
             img = Image.new('RGB',(size,size),color='white')
@@ -63,8 +56,6 @@ class Gen():
                 num = 5
             if not size:
                 size = 200
-            if 0>= num or num > size:
-                num = size
             if inp:
                 self.r.seed(inp)
             img = Image.new('RGB', (size, size), color='white')
@@ -114,8 +105,6 @@ class Gen():
                 num = 5
             if not size:
                 size = 200
-            if 0>= num or num > size:
-                num = size
             if inp:
                 self.r.seed(inp)
             if prim is None:

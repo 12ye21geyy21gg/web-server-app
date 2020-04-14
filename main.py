@@ -5,8 +5,8 @@ from wtforms.validators import DataRequired
 from flask import Flask, render_template,url_for,redirect,abort,request
 import json,random,sqlite3,hashlib,time,shutil,os
 from flask import Flask
-import app.gener as g
-import app.garbcol as GC
+import app.gen as g
+import app.gc as GC
 from os import listdir
 from os.path import isfile, join
 
@@ -45,10 +45,10 @@ def copy_file_function(list_of_files, directory1, directory2,rename=True):
     auth,name,id,temp = get_usrs(request.remote_addr)
     if id != 0:
         for i in list_of_files:
-            address = join(directory1,i)
+            address = directory1 + '/' + i
             shutil.copy(address, directory2)
             if rename:
-                os.rename(os.path.abspath(join(directory2,i)), os.path.abspath(join(directory2 , str(id)+'_' + i)))
+                os.rename(directory2 + '/' + i, directory2 + '/' + str(id)+'_' + i)
     else:
         return
 
@@ -62,11 +62,11 @@ def get_usrs(ip):
 
 def get_works(id):
     global gc
-    onlyfiles = [f for f in listdir(os.path.abspath(join('..','data','usr'))) if isfile(os.path.abspath(join('..','data','usr', f)))]
+    onlyfiles = [f for f in listdir('../data/usr') if isfile(join('../data/usr', f))]
     temp = list()
-    copy_file_function(onlyfiles,os.path.abspath(join('..','data','usr')),os.path.abspath(join('..','static')),rename=False)
+    copy_file_function(onlyfiles,'../data/usr','../static',rename=False)
     #gc.add_files(list(map(lambda x:x.split('_')[1],onlyfiles)),'../static')
-    gc.add_files(onlyfiles,os.path.abspath(join('..','static')))
+    gc.add_files(onlyfiles,'../static')
     for i in onlyfiles:
         if str(id) == i.split('_')[0]:
             temp.append('/static/'+i)
@@ -132,11 +132,11 @@ def main():
         if request.method == 'POST':
             f = request.files['file']
             fname = hashlib.sha256((str(time.time())+str(f.content_length)).encode('utf8')).hexdigest() + '.png'
-            f.save(os.path.abspath(join('..','static',fname)))
+            f.save('../static/'+fname)
             app.logger.debug(fname)
-            gc.add_files([fname],os.path.abspath(join('..','static')))
+            gc.add_files([fname],'../static')
             f.close()
-        usrs[request.remote_addr][3] = [form.pixelnoise.data,form.trianglenoise.data,form.mirrored.data,form.mirroredgithub.data,form.captcha.data,int(form.size.data),num,form.inp.data,form.pixilise.data,form.monopixilise.data,porog,os.path.abspath(join('..','static',fname)),form.voronoise.data,form.photo_voronoise.data]
+        usrs[request.remote_addr][3] = [form.pixelnoise.data,form.trianglenoise.data,form.mirrored.data,form.mirroredgithub.data,form.captcha.data,int(form.size.data),num,form.inp.data,form.pixilise.data,form.monopixilise.data,porog,'../static/'+fname,form.voronoise.data,form.photo_voronoise.data]
         return redirect('/result')
     return render_template('index.html',form=form,name=name,auth=auth)
 
@@ -145,7 +145,7 @@ def login():
     global app,gc
     form = LoginForm()
     if form.validate_on_submit():
-        conn = sqlite3.connect(os.path.abspath(join('..','data','users.db')))
+        conn = sqlite3.connect('../data/users.db')
         if form.login.data in get_logins(conn):
             data = get_data(form.login.data,conn)
             if get_hash(form.password.data) == data[3]:
@@ -177,7 +177,7 @@ def login():
 def register():
     form = RegisterForm()
     if form.validate_on_submit():
-        conn = sqlite3.connect(os.path.abspath(join('..','data','users.db')))
+        conn = sqlite3.connect('../data/users.db')
         if form.login.data not in get_logins(conn):
             if len(form.password.data) >= 8:
                 insert_user(form.name.data,form.login.data,form.password.data,conn)
@@ -250,8 +250,8 @@ def show():
                 gc.check()
                 return abort(404)
             usrs[request.remote_addr][3] = gen.names
-            copy_file_function(gen.get_fnames(),os.path.abspath(join('..','static')),os.path.abspath(join('..','data','usr')))
-            gc.add_files(gen.get_fnames(),os.path.abspath(join('..','static')))
+            copy_file_function(gen.get_fnames(),'../static','../data/usr')
+            gc.add_files(gen.get_fnames(),'../static')
 
             gen.names = list()
             gc.check()
@@ -266,7 +266,7 @@ def show():
 @app.route('/delete/<num>',methods=['GET','POST'])
 def delete(num):
     try:
-        os.remove(os.path.abspath(join('..','data','usr',num)))
+        os.remove('../data/usr/'+num)
     except Exception as e:
         app.logger.debug(e)
         abort(404)
