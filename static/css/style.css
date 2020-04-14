@@ -1,0 +1,9 @@
+            body {
+            background-size:125%;
+            background-image:url("/static/img/hero-bg.jpg");
+            background-repeat:no-repeat;
+            background-attachment:fixed;
+                     }
+            panel-default {
+            background-color: rgba(0, 50, 50, 0.5);
+            }
