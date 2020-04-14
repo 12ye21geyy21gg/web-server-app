@@ -45,7 +45,7 @@ def copy_file_function(list_of_files, directory1, directory2,rename=True):
     auth,name,id,temp = get_usrs(request.remote_addr)
     if id != 0:
         for i in list_of_files:
-            address = directory1 + '/' + i
+            address = join(directory1,'/' , i)
             shutil.copy(address, directory2)
             if rename:
                 os.rename(directory2 + '/' + i, directory2 + '/' + str(id)+'_' + i)
