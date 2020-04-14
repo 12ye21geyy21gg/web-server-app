@@ -4,16 +4,51 @@
     <meta charset="utf-8" />
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
     <title>Сервис по хеш-графики</title>
-    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="../static/css/style.css" />
     <style>
+	body {
+		    background-size:125%;
+		    background-repeat:no-repeat;
+		    background-attachment:fixed;
+		background-color:black;
+		             }
+		    .panel-default {
+		    border: none;
+		    }
+		    .panel{
+		    background-color: rgba(0, 0, 0, 0);
+		    color: #fff
+		    }
+		    .list-group{
+		    color: #000
+		    }
+		    .list-group-item{
+            color: #FFF;
+            background-color: rgba(0, 0, 0, 0);
+            }
         .container{
             margin-top:1em;
+	background-color:black;
         }
         .profiles{
             text-align:right;
         }
+        .panel-primary{
+        border-color: rgba(0, 0, 0, 0);
+        background-color: rgba(0, 0, 0, 0);
+        }
+        .panel-primary>.panel-heading{
+border-color: rgba(0, 0, 0, 0);
+background-color: rgba(0, 0, 0, 0);
+}
         #text{
             margin:0.1em;
+            font-size:2.3em;
+        }
+        #smth{
+            padding:1em;
+            color:#FFF;
+            border-radius: 1.0em;
         }
     </style>
 </head>
@@ -23,17 +58,20 @@
           <h1>Hash Grapher</h1>
       </div>
     </div>
+    <div id="smth">
     <div class="profiles">
           {% if auth %}
-            <h4>{{ name }}<a class="label label-default" href="/logout">Выйти</a></h4>
-            <a class="btn btn-primary" href="/view">Просмотреть результаты</a>
-          {% endif %}
-          <p>
+            <h4 ><span style="margin-right:1em;">{{ name }}</span><a class="label label-default" href="/logout">Выйти</a></h4>
+            {% endif %}
+        <p>
               <a class="btn btn-primary" href="/help">Получить помощь</a>
           {% if not auth %}
               <a class="btn btn-danger " href="/register">Зарегистрироваться</a>
               <a class="btn btn-success" href="/login">Войти</a>
           {% endif %}
+            {% if auth %}
+        <a class="btn btn-primary" href="/view" >Просмотреть результаты</a>
+            {% endif %}
           </p>
     </div>
     <div class="panel panel-primary">
@@ -90,6 +128,6 @@
         <input type = "file" name = "file" />
         <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
     </form>
-
+</div>
 </body>
 </html>

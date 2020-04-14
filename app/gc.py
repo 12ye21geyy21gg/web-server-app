@@ -8,9 +8,9 @@ class Gc: # Garbage Collector
         onlyfiles = [f for f in os.listdir('../static') if isfile(join('../static', f))]
         for i in onlyfiles:
             try:
-                os.remove('../static/'+onlyfiles)
+                os.remove('../static/'+i)
             except Exception as e:
-                self.logger.debug(e)
+                self.logger.debug(i)
     def check(self):
         for i in self.stack:
             if time.time() - i[2] > 1*60:

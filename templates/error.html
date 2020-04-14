@@ -4,11 +4,43 @@
   <title>Ваши результаты</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../static/css/style.css" />
+    <style>
+	body {
+		    background-size:125%;
+		    background-repeat:no-repeat;
+		    background-attachment:fixed;
+		    background-image:url("/static/img/hero-bgvb.jpg");
+		background-color:black;
+		             }
+		    .panel-default {
+		    border: none;
+		    }
+
+		    .list-group{
+		    color: #000
+		    }
+        .container{
+            margin-top:1em;
+	background-color:black;
+        }
+
+        .profiles{
+            text-align:right;
+        }
+        #text{
+            margin:0.1em;
+        }
+        #smth{
+            padding:1em;
+            background-color: #FFFFFF;
+            border-radius: 1.0em;
+        }
+    </style>
 </head>
 <body class="container">
-<div class="panel panel-primary">
+<div class="panel panel-danger">
     <div class="panel-heading"><h1>Ошибка</h1></div>
     {% if message  %}
             <div class="panel-body"><h2>{{ message }}</h2></div>
