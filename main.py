@@ -62,7 +62,7 @@ def get_usrs(ip):
 
 def get_works(id):
     global gc
-    onlyfiles = [f for f in listdir('../data/usr') if isfile(join('../data/usr', f))]
+    onlyfiles = [f for f in listdir(join('..','data','usr')) if isfile(join('..','data','usr', f))]
     temp = list()
     copy_file_function(onlyfiles,'../data/usr','../static',rename=False)
     #gc.add_files(list(map(lambda x:x.split('_')[1],onlyfiles)),'../static')
@@ -213,14 +213,10 @@ def view():
 @app.route('/download',methods=['GET','POST'])
 def download():
     auth, name, id, temp = get_usrs(request.remote_addr)
-    try:
-        if os.path.isfile(temp):
-            pass
-        else:
-            return render_template('error.html',message='Слишком поздно, генерируйте заного')
-    except Exception:
-        return render_template('error.html', message='Слишком поздно, генерируйте заного')
-
+    if os.path.isfile(temp):
+        pass
+    else:
+        return render_template('error.html',message='Слишком поздно, генерируйте заного')
 
 @app.route('/result',methods=['GET','POST'])
 def show():
