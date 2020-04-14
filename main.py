@@ -33,6 +33,7 @@ class UltimateForm(FlaskForm):
     monopixilise = BooleanField('Режим 7: Черно-белый пиксилятор фото')
     voronoise = BooleanField('Режим 8: Эффект Вороного')
     photo_voronoise = BooleanField('Режим 9: Фото с эффектом Вороного')
+    mono_voronoise = BooleanField('Режим 10: Моно эффект вороного')
     size = DecimalField('Ширина:', validators=[DataRequired()])
     num = StringField('Количество блоков:')
     porog = StringField('Порог:')
@@ -136,7 +137,7 @@ def main():
             app.logger.debug(fname)
             gc.add_files([fname],'../static')
             f.close()
-        usrs[request.remote_addr][3] = [form.pixelnoise.data,form.trianglenoise.data,form.mirrored.data,form.mirroredgithub.data,form.captcha.data,int(form.size.data),num,form.inp.data,form.pixilise.data,form.monopixilise.data,porog,'../static/'+fname,form.voronoise.data,form.photo_voronoise.data]
+        usrs[request.remote_addr][3] = [form.pixelnoise.data,form.trianglenoise.data,form.mirrored.data,form.mirroredgithub.data,form.captcha.data,int(form.size.data),num,form.inp.data,form.pixilise.data,form.monopixilise.data,porog,'../static/'+fname,form.voronoise.data,form.photo_voronoise.data,form.mono_voronoise.data]
         return redirect('/result')
     return render_template('index.html',form=form,name=name,auth=auth)
 
@@ -244,6 +245,8 @@ def show():
                     gen.gen_voronoise(temp[5],temp[6],temp[7])
                 if temp[13]:
                     gen.gen_photo_voronoise(temp[5],temp[6],temp[11])
+                if temp[14]:
+                    gen.gen_mono_voronoise(temp[5],temp[6],temp[7])
 
             except Exception as e:
                 app.logger.debug(e.__class__.__name__)

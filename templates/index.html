@@ -49,6 +49,8 @@
             <li class="list-group-item">Создание ЧБ пиксилизированных фотографий</li>
             <li class="list-group-item">Создание эффекта Вороного</li>
             <li class="list-group-item">Создание фотографий с эффектом Вороного</li>
+            <li class="list-group-item">Создание моно эффекта Вороного</li>
+
         </ul>
     </div>
     <form action="" method="post" enctype = "multipart/form-data">
@@ -62,6 +64,8 @@
         <p>{{ form.monopixilise() }} {{ form.monopixilise.label }}</p>
         <p>{{ form.voronoise() }} {{ form.voronoise.label }}</p>
         <p>{{ form.photo_voronoise() }} {{ form.photo_voronoise.label }}</p>
+        <p>{{ form.mono_voronoise() }} {{ form.mono_voronoise.label }}</p>
+
         <p>
             {{ form.size.label }}<br>
             {{ form.size(class="form-control") }}<br>

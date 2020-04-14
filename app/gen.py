@@ -324,3 +324,27 @@ class Gen():
             self.names.append(name)
         except Exception:
             return
+    def gen_mono_voronoise(self,size,num,inp):
+        try:
+            if not num or num == 0:
+                num = 5
+            if 0>= num or num > size:
+                num = size
+            self.r.seed(inp)
+            img = Image.new('RGB', (size, size), color='white')
+            pixs = img.load()
+            pts = list()
+            for i in range(num):
+                if random.randint(0,1) == 0:
+                    pts.append([self.r.randint(0, size - 1), self.r.randint(0, size - 1),(0,0,0)])
+                else:
+                    pts.append([self.r.randint(0, size - 1), self.r.randint(0, size - 1),(255,255,255)])
+            for h in range(size):
+                for w in range(size):
+                    pixs[h,w] = self.get_nearest_color(h,w,pts)
+
+            name = self.get_name()
+            img.save('..'+name)
+            self.names.append(name)
+        except Exception:
+            return
