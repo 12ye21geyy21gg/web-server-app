@@ -210,6 +210,18 @@ def view():
     else:
         abort(404)
 
+@app.route('/download',methods=['GET','POST'])
+def download():
+    auth, name, id, temp = get_usrs(request.remote_addr)
+    try:
+        if os.path.isfile(temp):
+            pass
+        else:
+            return render_template('error.html',message='Слишком поздно, генерируйте заного')
+    except Exception:
+        return render_template('error.html', message='Слишком поздно, генерируйте заного')
+
+
 @app.route('/result',methods=['GET','POST'])
 def show():
     global gen,app,usrs,gc
@@ -244,6 +256,7 @@ def show():
             usrs[request.remote_addr][3] = gen.names
             copy_file_function(gen.get_fnames(),'../static','../data/usr')
             gc.add_files(gen.get_fnames(),'../static')
+
             gen.names = list()
             gc.check()
             return redirect('/result')

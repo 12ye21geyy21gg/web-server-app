@@ -10,7 +10,11 @@
 <body class="container">
 <div class="panel panel-primary">
     <div class="panel-heading"><h1>Ошибка</h1></div>
-    <div class="panel-body"><h2>Страница не найдена или неверный запрос</h2></div>
+    {% if message  %}
+            <div class="panel-body"><h2>{{ message }}</h2></div>
+    {% else %}
+            <div class="panel-body"><h2>Страница не найдена или неверный запрос</h2></div>
+    {% endif %}
     <div class="panel-footer">
         <a class="btn btn-primary" href="/">На главную</a>
     </div>
