@@ -1,6 +1,8 @@
 import random
 from PIL import Image,ImageDraw,ImageFont
 import numpy,time,hashlib,math
+import os
+from os.path import join
 class Gen():
     def __init__(self):
         self.r = random.Random()
@@ -30,6 +32,7 @@ class Gen():
             del dr
             name = self.get_name()
             img.save('..'+name)
+            img.save(os)
             self.names.append(name)
         except Exception as e:
             return
