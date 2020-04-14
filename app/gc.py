@@ -5,7 +5,7 @@ class Gc: # Garbage Collector
         self.stack = list()
         self.logger = logger
     def clean(self):
-        onlyfiles = [f for f in os.listdir('../static') if isfile(join('../static', f))]
+        onlyfiles = [f for f in os.listdir(join('..','static')) if isfile(join('..','static', f))]
         for i in onlyfiles:
             try:
                 os.remove('../static/'+i)
