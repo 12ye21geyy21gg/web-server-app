@@ -5,8 +5,8 @@ from wtforms.validators import DataRequired
 from flask import Flask, render_template,url_for,redirect,abort,request
 import json,random,sqlite3,hashlib,time,shutil,os
 from flask import Flask
-import gener as g
-import garbcol as GC
+import app.gener as g
+import app.garbcol as GC
 from os import listdir
 from os.path import isfile, join
 
